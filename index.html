@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>營造監測工程報表管理系統 — 專案介紹</title>
+<meta name="description" content="營造監測顧問公司內部系統的技術 write-up：現場填報、自動化匯入、模板化報告產出，獨立全端開發。">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+
+<header class="title">
+  <h1>營造監測工程報表管理系統</h1>
+  <p class="lede">營造監測顧問公司的內部系統：工程師在工地填量測讀數或上傳監測儀器輸出檔，系統自動計算沉陷、水位、應力、位移與警戒狀態，並以模板一鍵產出週報／月報 PDF，取代原本散落各處的 Excel 手工流程。</p>
+  <p class="meta"><strong>角色</strong>　獨立全端工程師（需求訪談、架構、開發、部署、維運、文件、教育訓練）</p>
+  <p class="meta"><strong>期間</strong>　2026-02 ～ 2026-10（持續維運中）</p>
+  <p class="meta"><strong>技術</strong>　Next.js 16 App Router・React 19・TypeScript・Drizzle ORM・PostgreSQL 17・Supabase・Vercel・Railway（Gotenberg）</p>
+</header>
+
+<section>
+<h2>這是什麼</h2>
+<p>客戶是一家營造監測顧問公司，承接建築工地的安全監測：定期量測沉陷、隆起、水位、鋼筋應力、支撐應變、傾斜管等儀器，計算是否超過警戒值，每週每月出報告給業主。過去整個流程跑在 Excel 上，問題很具體：</p>
+<table>
+  <thead><tr><th>過去</th><th>現在</th></tr></thead>
+  <tbody>
+    <tr><td>檔案散在個人電腦與信件，版本對不齊</td><td>數據集中保存，全專案即時同步</td></tr>
+    <tr><td>沉陷量、與前次差值都要自己算、自己核</td><td>只填量測原始值，計算全部自動</td></tr>
+    <tr><td>報告圖表逐張手畫，每人格式不同</td><td>選模板一鍵產出 PDF，格式統一</td></tr>
+    <tr><td>檔案誤刪、覆蓋找不回</td><td>刪除可復原，每日異地備份</td></tr>
+    <tr><td>誰改了哪個數字沒有紀錄</td><td>每筆填寫與修改都有操作紀錄</td></tr>
+  </tbody>
+</table>
+<p>使用者是公司內的工程師、主任到經理，分 7 種角色。工地端用手機填讀數，辦公室端用電腦產報告。系統涵蓋 16 種監測數據類別：10 種人工填報、2 種自動化 Excel 匯入、4 種自動化 .dat 匯入。</p>
+</section>
+
+<section>
+<h2>系統長什麼樣</h2>
+<p>照使用流程排序：填報 → 自動化匯入 → 報告編輯 → PDF 成品 → 輔助計算 → 稽核。截圖內的專案名與帳號已替換為示範資料。</p>
+
+<figure>
+  <img src="assets/01-reading-table.webp" alt="沉陷量場次讀數表" loading="lazy">
+  <figcaption><b>場次讀數表。</b>左側是量測場次清單，右側是儀器×讀數表。使用者只填本次量測高程，沉陷量、與前次差值由系統算；上方「手稿」區塊可照紙本前視／後視填寫後自動平差。</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/02-copy-paste.webp" alt="從 Excel 整批複製貼上到讀數表的操作錄影" loading="lazy">
+  <figcaption><b>Excel 式操作。</b>從試算表框選一整區複製，貼到讀數表自動對齊到對應列；也支援滑鼠框選、方向鍵跨格、Delete 清空。一次貼上的幾十格合併成一條 SQL 寫入。</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/03-dat-upload.webp" alt=".dat 自動化數據上傳對話框" loading="lazy">
+  <figcaption><b>自動化數據匯入。</b>監測平台輸出的 TOA5 .dat 檔一檔含四類儀器，上傳前先解析預覽：測站、時間戳、各類筆數；確認後才寫入。另支援 .xlsx（收斂量、軌道位移）與 .gkn（傾斜管）。</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/04-report-editor.webp" alt="產報告步驟一：報告資訊、批次套用日期、模組排序" loading="lazy">
+  <figcaption><b>報告編輯器。</b>兩步驟精靈：先填報告資訊、批次套用日期區間、拖曳調整模組順序（缺必填的模組以紅框提示），再預覽與匯出。每個模組可各自設定場次、儀器篩選。</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/05-template-modules.webp" alt="新增報告模板：分組的模組選單" loading="lazy">
+  <figcaption><b>模組化報告模板。</b>56 種模組型別（各類別的表格、折線圖、月報矩陣、監測摘要、封面、圖片）依週報／月報分組，可任意排列組合成系統模板，專案再依需求微調。</figcaption>
+</figure>
+
+<div class="pair">
+  <figure>
+    <img src="assets/06-pdf-si.webp" alt="PDF 成品：傾斜管表格與位移曲線同頁" loading="lazy">
+    <figcaption><b>PDF 成品：傾斜管頁。</b>97 個深度的表格與位移曲線同頁呈現，紙張高度依內容動態加高而不跨頁。圖表為向量 SVG，業主可在 Adobe 內再編輯。</figcaption>
+  </figure>
+  <figure>
+    <img src="assets/07-pdf-settlement-chart.webp" alt="PDF 成品：沉陷量歷時曲線圖" loading="lazy">
+    <figcaption><b>PDF 成品：歷時曲線。</b>安全／警戒／行動值自動畫入，歸零事件以垂直線標記，資料點形狀沿用業主習慣的 Excel 樣式。</figcaption>
+  </figure>
+</div>
+
+<figure class="narrow">
+  <img src="assets/08-closure-preview.webp" alt="閉合差修正預覽對話框" loading="lazy">
+  <figcaption><b>閉合差平差預覽。</b>水準測量的閉環自動偵測，列出每站校正量與校正後高程，確認後一鍵填回場次。把測量員的紙本手算流程數位化，但保留人工確認。</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/09-system-log.webp" alt="系統操作紀錄" loading="lazy">
+  <figcaption><b>稽核日誌。</b>系統層與專案層兩套紀錄，可依人員、分類、時間篩選。每筆有一行人話摘要，展開看技術細節（對象 id、old → new、連帶影響）。</figcaption>
+</figure>
+</section>
+
+<section>
+<h2>架構</h2>
+<pre>瀏覽器（手機現場填 / 電腦產報告）
+   │ TanStack Query 樂觀更新
+   ▼
+Vercel · Next.js 16 ── Server Actions / middleware 登入牆
+   │                         │
+   ▼                         ▼
+Supabase                 Railway · Gotenberg
+ Postgres 17 (Drizzle)     常駐 Chromium，HTML → PDF
+ Auth / Storage / Realtime
+   │
+   ▼（每日 03:00）
+GitHub Actions → Cloudflare R2（DB dump，保留 90 天）</pre>
+<p>主體是 serverless：Next.js 部署在 Vercel，Server Actions 直接以 pg Pool 連 Supabase Postgres，不另做 REST 層；認證走 middleware 全站登入牆。整個系統唯一的常駐容器是 PDF 服務，獨立出來是為了避開 serverless 的冷啟動、執行時間上限，以及 headless Chromium 沒有中文字型的問題。多人同時填同一張讀數表靠 Supabase Realtime broadcast 同步，寫入帶樂觀鎖。備份由 GitHub Actions 每日 dump 到另一家雲端，不依賴平台內建備份。</p>
+<table class="kv">
+  <tbody>
+    <tr><td>前端</td><td>Next.js 16 App Router、React 19、TypeScript、TanStack Query v5、shadcn/ui + Tailwind CSS 4、react-hook-form + zod、dnd-kit、Recharts、TanStack Virtual</td></tr>
+    <tr><td>後端</td><td>Next.js Server Actions、Drizzle ORM、PostgreSQL 17</td></tr>
+    <tr><td>平台</td><td>Supabase（Postgres / Auth / Storage / Realtime）</td></tr>
+    <tr><td>報告</td><td>HTML → Gotenberg（Railway）→ PDF；本機 fallback puppeteer-core；pdfjs-dist 拆頁為向量 SVG</td></tr>
+    <tr><td>文件</td><td>Fumadocs + MDX 內建使用手冊，Orama 中文 tokenizer 全文搜尋</td></tr>
+    <tr><td>維運</td><td>Vercel、Railway、GitHub Actions 每日備份 → Cloudflare R2、Vercel Log Drain → Axiom</td></tr>
+    <tr><td>開發環境</td><td>Supabase CLI 本機 stack（Docker）；本機／UAT／正式三套環境分離；版本化 migration</td></tr>
+  </tbody>
+</table>
+</section>
+
+<section>
+<h2>技術點與設計決策</h2>
+
+<h3>1. 讀數表的 Excel 體驗：整批貼上、框選、方向鍵，單一 SQL 寫入</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>使用者習慣在 Excel 填讀數，逐格點、逐格存會被嫌慢；且十種監測類別各有一張讀數表。</dd>
+  <dt>做法</dt><dd>共用 hook 處理 TSV 貼上對齊到視覺列、拖曳框選、複製為 TSV、Excel 式方向鍵與 Enter 跨格。寫入端把一次貼上的幾十格按「觸及欄位組合」分群，每群一條 <code>UPDATE … FROM VALUES</code>，30 格貼上等於 1 條 SQL；前端樂觀更新、儲存中疊鎖表 overlay。</dd>
+  <dt>為什麼</dt><dd>十類讀數表共用同一個引擎加 hook 工廠，各類別只宣告「表＋可寫欄位」十行 glue。行為一致，新增類別成本極低。</dd>
+</dl>
+
+<h3>2. 多人同時填表：Realtime 同步加樂觀鎖，不互相覆蓋</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>同一張讀數表常常工地手機與辦公室電腦同時在填。</dd>
+  <dt>做法</dt><dd>每個量測場次一個 Realtime channel，儲存成功後 broadcast；每次寫入帶 <code>expectedUpdatedAt</code>，不符即回報衝突而不覆蓋。</dd>
+  <dt>為什麼</dt><dd>資料正確性優先。衝突明示給使用者，而不是後寫者贏。</dd>
+</dl>
+
+<h3>3. 報告產生管線：模組 registry → HTML → PDF，圖表全向量</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>報告由 50 多種模組任意排列組合；業主要能在 Adobe 編輯 PDF，A3／A4 混印。</dd>
+  <dt>做法</dt><dd>每個模組型別一個宣告式 <code>ModuleDef</code>（label、驗證、日期欄位、HTML render），以 <code>satisfies Record&lt;ReportModuleType, ModuleDef&gt;</code> 保證漏註冊即編譯錯誤，所有查表由 registry 衍生。圖表用 Recharts 離屏渲染後抓 SVG inline 進 HTML，不截圖成 PNG；每張圖片頁以 per-page <code>@page</code> 設為圖片原始 mm 尺寸。</dd>
+  <dt>為什麼</dt><dd>單一來源避免「模組清單／驗證／標題」三處分歧；向量 PDF 可再編輯、印不同紙張不失真。</dd>
+</dl>
+
+<h3>4. PDF 服務獨立成容器</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>在 Vercel serverless 跑 headless Chromium 有冷啟動、沒有 CJK 字型（中文變豆腐）、執行時間上限。</dd>
+  <dt>做法</dt><dd>Gotenberg 容器常駐 Railway，route 只轉發 multipart。timeout 鏈 Gotenberg 600s &lt; adapter 620s &lt; Vercel 800s，讓內層先爆才有乾淨錯誤。前端下載中全螢幕 overlay、計時、可取消（AbortController 一路傳到 Gotenberg）。本機無環境變數時自動 fallback 系統 Chrome。</dd>
+  <dt>為什麼</dt><dd>報告可能破百頁，寧可久等也要能完成，而且錯誤要可診斷。</dd>
+</dl>
+
+<h3>5. 快照原則：舊場次的數字永不因後來的設定改變而變</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>初始高程、儀器品牌係數、初始值會被修改或換儀器。若計算時讀「現在的設定」，歷史報告會跟著變。</dd>
+  <dt>做法</dt><dd>建立量測場次當下，把初始高程、係數、初始值抄進每列讀數；計算一律用讀數列自己的快照，改設定只影響之後的新場次。需要回溯修正時走明確的 backfill 腳本。</dd>
+  <dt>為什麼</dt><dd>監測報告有法律文件性質，歷史數據必須可重現。</dd>
+</dl>
+
+<h3>6. 手填修正量的「沿用」：讀取時動態解析，不抄值</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>換儀器後讀數有固定偏移，使用者在某場次填一次修正量，之後場次要自動沿用直到再變。</dd>
+  <dt>做法</dt><dd>資料庫只存使用者真的填的值（null 代表沿用）。單場次用 <code>DISTINCT ON</code> 找觀測日期更早的最近一筆非 null；折線圖與月報由伺服器一次抓整條時間線，純函式算出每列有效值。UI 以灰字 placeholder 顯示沿用值。</dd>
+  <dt>為什麼</dt><dd>若建場次時抄值，使用者回頭補填舊場次，後面不會跟著動，而且分不出手填與沿用。</dd>
+</dl>
+
+<h3>7. 權限：判 permission 而非 role，職級規則單一來源</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>7 個角色、11 種權限，「誰能動誰的帳號」有職級規則，前後端都要判。</dd>
+  <dt>做法</dt><dd>後端 <code>requirePermissions([...])</code> 與 <code>assertProjectAccess</code>，前端 <code>hasPermission</code>；職級比較 <code>canActOnRank(operator, target)</code> 是一個前後端共用的純函式。專案可見性（只看自己參與的案）與權限（能做哪類事）正交；無權限的功能連入口都不渲染。</dd>
+  <dt>為什麼</dt><dd>改規則只動一處，避免散落各處的 <code>role === 'manager'</code>。</dd>
+</dl>
+
+<h3>8. 稽核日誌的「可追溯」規範</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>出 bug 或要還原時，日誌只寫「更新了讀數」不夠。</dd>
+  <dt>做法</dt><dd>每筆 log 分「一行人話摘要」與「多行技術細節」：必記對象 uuid，update 必記 old → new，清單類列明細，cascade 必列連帶對象，刪除記快照。系統層與專案層兩套紀錄，可依人員、分類、關鍵字、時間篩選，條件全送後端配 cursor 分頁。</dd>
+  <dt>為什麼</dt><dd>判準只有一句話：出 bug 或要還原行為時，這筆 log 夠不夠追蹤。</dd>
+</dl>
+
+<h3>9. 自動化數據匯入：三種格式、可編輯的時間序列矩陣</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>監測平台輸出 .xlsx、.dat（TOA5，一檔含四類儀器）、.gkn 三種格式；上傳後還要能改、刪、補列，重複上傳要能選覆寫或略過。</dd>
+  <dt>做法</dt><dd>共用的 xlsx 解析骨架，各類別只宣告 key 欄位。上傳前 dry-run 比對重複筆數（鍵值壓縮 1.1MB → 47KB 以避開 Server Action 1MB 上限）。讀數列是事實來源；共用的時間戳×儀器編輯矩陣採游標分頁加列虛擬化，不把整區間讀進記憶體。刪讀數後自動清孤兒上傳紀錄。</dd>
+  <dt>為什麼</dt><dd>三套類別共用一份純邏輯（patch 規劃、audit 行產生），新增第四類只寫宣告。</dd>
+</dl>
+
+<h3>10. 專案級顯示設定：單位、小數位、名稱可自訂，資料庫永遠存 canonical</h3>
+<dl class="decision">
+  <dt>問題</dt><dd>不同案子沉陷量要 mm 或 cm，警戒值要叫「警示值」，環片編號要叫「里程」。</dd>
+  <dt>做法</dt><dd>override-only 表只存與預設不同的值（等於預設即刪列），<code>resolveXxx()</code> 純函式解析。數值只在顯示與輸入層換算，達標判定仍比 canonical 值；預設路徑的輸出逐字元與改版前相同。</dd>
+  <dt>為什麼</dt><dd>顯示自訂不污染識別欄與計算。</dd>
+</dl>
+
+<h3>其他</h3>
+<ul>
+  <li><b>手稿閉合差平差</b>：錨點加多段平差，順序由系統決定（內環先算），同一組合結果唯一；純 SVG 路線示意圖顯示走訪關係。手稿只是輔助計算，不取代測量員判斷。</li>
+  <li><b>表格分頁與表頭防溢出</b>：分頁用平均分配（23 列 → 12＋11，不是 22＋1）；表頭依 CJK／ASCII 字寬估算求統一字級，放不下才換行、絕不溢出。全域規則一次治本。</li>
+  <li><b>維運</b>：GitHub Actions 每日 dump → Cloudflare R2 保留 90 天、還原流程實測過、成本 0；Vercel Log Drain → Axiom 儀表板；migration 版本化、禁止直接 push schema。</li>
+  <li><b>工程紀律</b>：跨類別重複邏輯一律抽引擎＋工廠＋宣告式 glue；計算公式、判定規則、分頁都是純函式單一來源；報告會消費的查詢 <code>staleTime: 0</code>；單檔小於 1000 行。</li>
+</ul>
+</section>
+
+<section>
+<h2>規模</h2>
+<table class="kv">
+  <tbody>
+    <tr><td>開發期間</td><td>2026-02-08 ～ 2026-10-29（持續中）</td></tr>
+    <tr><td>commits</td><td>430</td></tr>
+    <tr><td>TypeScript</td><td>624 檔，約 10.4 萬行</td></tr>
+    <tr><td>資料庫</td><td>62 張表（每表一個 schema 檔）、69 個 migrations</td></tr>
+    <tr><td>監測數據類別</td><td>16（10 種人工填報、2 種自動化 Excel、4 種自動化 .dat）</td></tr>
+    <tr><td>讀數表類別</td><td>10，共用同一套 Excel 式批次引擎</td></tr>
+    <tr><td>報告模組型別</td><td>56</td></tr>
+    <tr><td>角色</td><td>7</td></tr>
+    <tr><td>內建使用手冊</td><td>28 個內容頁（MDX）</td></tr>
+  </tbody>
+</table>
+<p class="meta">數字取自 git 與原始碼統計，統計日 2026-10-29。</p>
+</section>
+
+<section>
+<h2>我負責的範圍</h2>
+<p>從頭到尾一個人：需求訪談（跟測量員與經理一起過每種儀器的填報與出報告流程）→ 資料模型與架構設計 → 前後端開發 → 部署與維運（Vercel、Supabase、Railway、每日備份、日誌監控）→ 內建使用手冊 28 頁 → 兩場教育訓練投影片約 60 頁 → 正式環境 cutover。原始碼為客戶產品，本頁只放截圖與描述。</p>
+</section>
+
+<footer>
+  本頁為個人履歷用的專案介紹。截圖內專案名稱與帳號皆為示範資料。
+</footer>
+
+</main>
+</body>
+</html>

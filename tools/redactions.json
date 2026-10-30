@@ -1,0 +1,303 @@
+{
+  "_comment": "座標皆為來源原圖像素。crop=[x0,y0,x1,y1]；masks 以實色矩形蓋住敏感文字，可選擇寫入替代文字。",
+  "font_candidates_bold": [
+    "/System/Library/Fonts/STHeiti Medium.ttc",
+    "/System/Library/Fonts/Hiragino Sans GB.ttc"
+  ],
+  "font_candidates": [
+    "/System/Library/Fonts/Hiragino Sans GB.ttc",
+    "/System/Library/Fonts/STHeiti Medium.ttc",
+    "/System/Library/Fonts/Supplemental/Arial Unicode.ttf"
+  ],
+  "images": [
+    {
+      "src": "screens/settlement-reading-table.png",
+      "out": "01-reading-table.webp",
+      "crop": [
+        0,
+        97,
+        3022,
+        1716
+      ]
+    },
+    {
+      "src": "screens/auto-dat-upload.png",
+      "out": "03-dat-upload.webp",
+      "crop": [
+        0,
+        97,
+        3022,
+        1716
+      ]
+    },
+    {
+      "src": "screens/report-generator-step1.png",
+      "out": "04-report-editor.webp",
+      "crop": [
+        0,
+        97,
+        3022,
+        1716
+      ],
+      "masks": [
+        {
+          "box": [
+            900,
+            230,
+            1722,
+            284
+          ],
+          "fill": "#ffffff",
+          "text": "示範專案新建工程",
+          "color": "#111111",
+          "size": 36,
+          "bold": true
+        },
+        {
+          "box": [
+            954,
+            408,
+            1600,
+            447
+          ],
+          "fill": "#ffffff",
+          "text": "示範專案新建工程",
+          "color": "#111111",
+          "size": 27
+        },
+        {
+          "box": [
+            954,
+            595,
+            1600,
+            634
+          ],
+          "fill": "#ffffff",
+          "text": "示範專案新建工程",
+          "color": "#9aa0a6",
+          "size": 27
+        }
+      ]
+    },
+    {
+      "src": "screens/admin-report-template-modules.png",
+      "out": "05-template-modules.webp",
+      "crop": [
+        0,
+        97,
+        3022,
+        1716
+      ]
+    },
+    {
+      "src": "report-pdf/p02-si-combined-table-chart.png",
+      "out": "06-pdf-si.webp",
+      "masks": [
+        {
+          "box": [
+            300,
+            92,
+            1020,
+            142
+          ],
+          "fill": "#ffffff",
+          "text": "示範專案新建工程",
+          "color": "#111111",
+          "size": 34,
+          "bold": true,
+          "align": "center"
+        }
+      ]
+    },
+    {
+      "src": "report-pdf/p04-settlement-chart.png",
+      "out": "07-pdf-settlement-chart.webp",
+      "masks": [
+        {
+          "box": [
+            300,
+            128,
+            1020,
+            174
+          ],
+          "fill": "#ffffff",
+          "text": "示範專案新建工程",
+          "color": "#111111",
+          "size": 34,
+          "bold": true,
+          "align": "center"
+        }
+      ]
+    },
+    {
+      "src": "screens/manuscript-closure-preview.png",
+      "out": "08-closure-preview.webp",
+      "crop": [
+        992,
+        478,
+        2026,
+        1238
+      ]
+    },
+    {
+      "src": "screens/admin-system-log.png",
+      "out": "09-system-log.webp",
+      "crop": [
+        0,
+        97,
+        3022,
+        1716
+      ],
+      "masks": [
+        {
+          "box": [
+            951,
+            571,
+            1226,
+            610
+          ],
+          "fill": "#ffffff",
+          "text": "(***@***.com)",
+          "color": "#555555",
+          "size": 27
+        },
+        {
+          "box": [
+            803,
+            705,
+            1040,
+            743
+          ],
+          "fill": "#ffffff",
+          "text": "測試帳號A」",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            740,
+            838,
+            990,
+            876
+          ],
+          "fill": "#ffffff",
+          "text": "測試帳號A」",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            740,
+            972,
+            990,
+            1010
+          ],
+          "fill": "#ffffff",
+          "text": "測試帳號A」",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            740,
+            1105,
+            990,
+            1143
+          ],
+          "fill": "#ffffff",
+          "text": "測試帳號A」",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            740,
+            1240,
+            990,
+            1278
+          ],
+          "fill": "#ffffff",
+          "text": "測試帳號A」",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            997,
+            1238,
+            1330,
+            1278
+          ],
+          "fill": "#ffffff",
+          "text": "(***@***.com)",
+          "color": "#555555",
+          "size": 27
+        },
+        {
+          "box": [
+            717,
+            1368,
+            1608,
+            1412
+          ],
+          "fill": "#ffffff",
+          "text": "「測試帳號B」：名稱「測試帳號B」→「測試帳號B-改名」、部門 [] → [南區]",
+          "color": "#333333",
+          "size": 27
+        },
+        {
+          "box": [
+            936,
+            1504,
+            1210,
+            1545
+          ],
+          "fill": "#ffffff",
+          "text": "(***@***.com)",
+          "color": "#555555",
+          "size": 27
+        }
+      ]
+    }
+  ],
+  "gif": {
+    "src": "screens/table-select-copy-paste.gif",
+    "out": "02-copy-paste.webp",
+    "width": 1200,
+    "quality": 70,
+    "sheets_probe": {
+      "xy": [
+        18,
+        54
+      ],
+      "rgb": [
+        33,
+        165,
+        97
+      ],
+      "tol": 60
+    },
+    "sheets_masks": [
+      {
+        "box": [
+          36,
+          44,
+          200,
+          62
+        ],
+        "fill": "#ffffff"
+      }
+    ],
+    "app_masks": [
+      {
+        "box": [
+          210,
+          10,
+          660,
+          30
+        ],
+        "fill": "#ffffff"
+      }
+    ]
+  }
+}

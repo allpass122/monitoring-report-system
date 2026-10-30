@@ -1,0 +1,84 @@
+/* 單頁技術 write-up 樣式：黑／灰／藍三色、系統字型、無裝飾 */
+:root {
+  --fg: #111;
+  --muted: #666;
+  --accent: #1a56db;
+  --line: #ddd;
+  --bg: #fff;
+  --code-bg: #f6f7f9;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  padding: 0 16px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+main {
+  max-width: 800px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  margin: 0 auto;
+  padding: 48px 0 96px;
+}
+
+h1 { font-size: 26px; line-height: 1.35; margin: 0 0 8px; font-weight: 600; }
+h2 { font-size: 20px; margin: 56px 0 16px; padding-bottom: 6px; border-bottom: 1px solid var(--line); font-weight: 600; }
+h3 { font-size: 16px; margin: 28px 0 6px; font-weight: 600; }
+p { margin: 0 0 14px; }
+a { color: var(--accent); }
+
+.meta { color: var(--muted); margin: 0 0 4px; }
+.meta strong { color: var(--fg); font-weight: 500; }
+
+/* 標題列 */
+header.title p { margin: 0 0 4px; }
+header.title .lede { color: var(--fg); margin-top: 6px; }
+
+/* 一般表格 */
+table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 15px; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 14px; }
+table.kv td:first-child { color: var(--muted); white-space: nowrap; width: 38%; }
+
+/* 截圖 */
+figure { margin: 28px 0; }
+figure img { display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid var(--line); }
+figure.narrow img { max-width: 560px; }
+figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; line-height: 1.6; }
+figcaption b { color: var(--fg); font-weight: 600; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pair figure { margin: 0; min-width: 0; }
+.pair img { border: 1px solid var(--line); }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+
+/* 架構圖（monospace 文字框） */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 12px 0 16px;
+}
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; background: var(--code-bg); padding: 1px 4px; }
+
+/* 設計決策：問題／做法／為什麼 */
+dl.decision { margin: 0 0 8px; }
+dl.decision dt { color: var(--muted); font-size: 14px; margin-top: 6px; }
+dl.decision dd { margin: 0; }
+
+ul { padding-left: 1.3em; margin: 0 0 14px; }
+li { margin: 2px 0; }
+
+footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
