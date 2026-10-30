@@ -90,26 +90,6 @@
       ]
     },
     {
-      "src": "report-pdf/p02-si-combined-table-chart.png",
-      "out": "06-pdf-si.webp",
-      "masks": [
-        {
-          "box": [
-            300,
-            92,
-            1020,
-            142
-          ],
-          "fill": "#ffffff",
-          "text": "示範專案新建工程",
-          "color": "#111111",
-          "size": 34,
-          "bold": true,
-          "align": "center"
-        }
-      ]
-    },
-    {
       "src": "report-pdf/p04-settlement-chart.png",
       "out": "07-pdf-settlement-chart.webp",
       "masks": [
@@ -127,16 +107,6 @@
           "bold": true,
           "align": "center"
         }
-      ]
-    },
-    {
-      "src": "screens/manuscript-closure-preview.png",
-      "out": "08-closure-preview.webp",
-      "crop": [
-        992,
-        478,
-        2026,
-        1238
       ]
     },
     {
